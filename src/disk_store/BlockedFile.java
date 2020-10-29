@@ -108,7 +108,7 @@ public class BlockedFile {
 	/**
 	 * read the block at the specified block index into buffer
 	 * @param index block index
-	 * @param b a BlockBuffer
+	 * @param buf a BlockBuffer
 	 * @return
 	 */
 	public int read(int index, BlockBuffer buf) {
@@ -129,7 +129,7 @@ public class BlockedFile {
     /**
      * write the buffer contents to the specified block index
      * @param index block index
-     * @param b block
+     * @param buf block
      */
 	public void write(int index, BlockBuffer buf) {
 		buf.reset();

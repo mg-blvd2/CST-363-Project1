@@ -190,6 +190,7 @@ public class HeapDB implements DB, Iterable<Record> {
 		return cnt;
 	}
 
+	//TODO: Insert
 	@Override
 	public boolean insert(Record rec) {
 		// make sure no record with rec's key is already in the database
@@ -245,6 +246,7 @@ public class HeapDB implements DB, Iterable<Record> {
 		return insert(rec);
 	}
 
+	//TODO: Delete
 	@Override
 	public boolean delete(int key) {
 		Record rec = schema.blankRecord();
@@ -302,6 +304,7 @@ public class HeapDB implements DB, Iterable<Record> {
 		return recs.get(0);
 	}
 
+	//TODO: Lookup
 	@Override
 	public List<Record> lookup(String fname, int key) {
 		int fieldNum = schema.getFieldIndex(fname);
@@ -406,6 +409,7 @@ public class HeapDB implements DB, Iterable<Record> {
 		createHashIndex(schema.getKey());
 	}
 
+	//TODO: Initialize
 	// initialize the given index
 	private void initializeIndex(int fieldNum, DBIndex index) {
 		if (index == null) {
@@ -416,7 +420,7 @@ public class HeapDB implements DB, Iterable<Record> {
 		// for each record in the DB, you will need to insert its
 		// index column value and the block number
 		
-		// HINT:  see method diagnosticPrint for example of how to 
+		// HINT:  see method toStringDiagnostic for example of how to
 		// iterate of all data blocks in table and all rows
 		// in each block
 		

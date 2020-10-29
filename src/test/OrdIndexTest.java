@@ -27,6 +27,7 @@ class OrdIndexTest {
 		idx.insert(2, 3);
 		idx.insert(3, 1);
 		idx.insert(4, 2);
+
 	}
 
 	@Test
