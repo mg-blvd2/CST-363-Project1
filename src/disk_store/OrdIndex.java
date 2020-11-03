@@ -169,7 +169,7 @@ public class OrdIndex implements DBIndex {
 
 	@Override
 	public void delete(int key, int blockNum) {
-		// lookup key 
+		// lookup key
 		//  if key not found, should not occur.  Ignore it.
 		//  decrement count for blockNum.
 		//  if count is now 0, remove the blockNum.

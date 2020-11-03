@@ -222,8 +222,8 @@ public class HeapDB implements DB, Iterable<Record> {
 				
 				for (int i=0; i< indexes.length; i++) {
 					if (indexes[i]!=null) {
-						// maintain index[i], 
-						indexes[i].insert(rec.getKey(), blockNum );
+						// maintain index[i], <<column value from record>>
+						indexes[i].insert(rec.getKey(), blockNum);
 					}
 				}
 
@@ -273,10 +273,11 @@ public class HeapDB implements DB, Iterable<Record> {
 						}
 							// index maintenance
 							// YOUR CODE HERE
+
 						for (int i=0; i< indexes.length; i++) {
 							if (indexes[i]!=null) {
 								// maintain index[i], 
-								indexes[i].delete(rec.getKey(), blockNum );
+								indexes[i].delete(rec.getKey(), blockNum);
 							}
 						}
 
@@ -415,6 +416,38 @@ public class HeapDB implements DB, Iterable<Record> {
 		if (index == null) {
 			throw new IllegalArgumentException("index is null");
 		}
+
+		// What wisneski recommended is beyond here
+
+		// toStringDiagnosis function code here
+		Record rec = schema.blankRecord();
+
+		// read and print the block bitmap
+		bf.read(bitmapBlock, blockmapBuffer);
+
+		for (int blockNum = bitmapBlock + 1; blockNum <= bf.getLastBlockIndex(); blockNum++) {
+			bf.read(blockNum, buffer);
+			// print the record bitmap of block
+			//sb.append("Block " + blockNum + "\n");
+			//sb.append("Record bitmap: " + recMap + "\n");
+			int recsOnLine = 0;
+			for (int recNum = 0; recNum < recMap.size(); recNum++) {
+				if (recMap.getBit(recNum)) {
+					// record j is present; check its key value
+					int loc = recordLocation(recNum);
+					rec.deserialize(buffer.buffer, loc);
+					index.insert(rec.getKey(), blockNum);
+					recsOnLine++;
+				}
+			}
+		}
+
+		// use this method to 'update' the indexes
+		//index.insert(key, blockNum(which needs the code above to find the block number));
+
+		System.out.println("Julio");
+		toStringDiagnostic();
+		System.out.println("Coolio");
 
 		// YOUR CODE HERE
 		// for each record in the DB, you will need to insert its
