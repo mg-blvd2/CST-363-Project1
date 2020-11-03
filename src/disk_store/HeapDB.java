@@ -320,7 +320,7 @@ public class HeapDB implements DB, Iterable<Record> {
 					// no index on this column.  do linear scan
 					// add all records into "result"
 					for (Record rec : this) {
-						// ...
+						result.add(rec);
 				    }
 					
 				} else {
@@ -328,10 +328,15 @@ public class HeapDB implements DB, Iterable<Record> {
 					// returns a list of block numbers
 					// call lookupInBlock to get the actual records 
 					// add records into "result'
+					List<Integer> blockNumbers = indexes[fieldNum].lookup(key);
+					for(Integer number : blockNumbers) {
+						List<Record> records = lookupInBlock(fieldNum, key, number);
+						result.addAll(records);
+					}
 				}
 
 		// replace the following line with your return statement
-		throw new UnsupportedOperationException();
+		return result;
 	}
 
 	// Perform a linear search in the block with the given blockNum
