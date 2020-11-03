@@ -223,7 +223,7 @@ public class HeapDB implements DB, Iterable<Record> {
 				for (int i=0; i< indexes.length; i++) {
 					if (indexes[i]!=null) {
 						// maintain index[i], 
-						// indexes[i].insert( <<column value from record>>, blockNum );
+						indexes[i].insert(rec.getKey(), blockNum );
 					}
 				}
 
@@ -276,7 +276,7 @@ public class HeapDB implements DB, Iterable<Record> {
 						for (int i=0; i< indexes.length; i++) {
 							if (indexes[i]!=null) {
 								// maintain index[i], 
-								// indexes[i].delete(<<column value>>, blockNum );
+								indexes[i].delete(rec.getKey(), blockNum );
 							}
 						}
 
