@@ -164,6 +164,13 @@ public class OrdIndex implements DBIndex {
 		newEntry.key = key;
 		newEntry.blocks = new ArrayList<>();
 		newEntry.blocks.add(newBlock);
+
+		if (insertIdx == entries.size() || entries.isEmpty()) {
+			entries.add(newEntry);
+
+			return;
+		}
+
 		entries.add(insertIdx, newEntry);
 	}
 
@@ -178,7 +185,7 @@ public class OrdIndex implements DBIndex {
 		Entry modifyEntry = entries.get(keyLocation);
 		boolean hadToRemove = modifyEntry.removeFromBlock(blockNum);
 		if(modifyEntry.blocks.size() == 0) {
-			entries.remove(key);
+			entries.remove(keyLocation);
 		}
 		if(hadToRemove) {
 			size--;
