@@ -39,7 +39,6 @@ public class HeapDB implements DB, Iterable<Record> {
 	// 1 record is used
 	//
 
-	// TODO
 	// - add a modify() method and test it
 	// - create a HashDB implementation of the DB interface
 
@@ -190,7 +189,6 @@ public class HeapDB implements DB, Iterable<Record> {
 		return cnt;
 	}
 
-	//TODO: Insert
 	@Override
 	public boolean insert(Record rec) {
 		// make sure no record with rec's key is already in the database
@@ -217,14 +215,14 @@ public class HeapDB implements DB, Iterable<Record> {
 					blockMap.setBit(blockNum, true);
 					bf.write(bitmapBlock, blockmapBuffer);
 				}
+
 				// index maintenance
-				// YOUR CODE HERE
-				
 				for (int i=0; i< indexes.length; i++) {
 					if (indexes[i]!=null) {
+						// Finds the field integer of the record and uses that to get the key of the record
 						IntField fieldField = (IntField) rec.get(i);
 						int fieldNum = fieldField.getValue();
-						// maintain index[i], <<column value from record>>
+
 						indexes[i].insert(fieldNum, blockNum);
 					}
 				}
@@ -248,7 +246,6 @@ public class HeapDB implements DB, Iterable<Record> {
 		return insert(rec);
 	}
 
-	//TODO: Delete
 	@Override
 	public boolean delete(int key) {
 		Record rec = schema.blankRecord();
@@ -273,14 +270,14 @@ public class HeapDB implements DB, Iterable<Record> {
 							blockMap.setBit(blockNum, false);
 							bf.write(bitmapBlock, blockmapBuffer);
 						}
-							// index maintenance
-							// YOUR CODE HERE
 
+						// index maintenance
 						for (int i=0; i< indexes.length; i++) {
 							if (indexes[i]!=null) {
+								// Finds the field integer of the record and uses that to get the key of the record
 								IntField fieldField = (IntField) rec.get(i);
 								int fieldNum = fieldField.getValue();
-								// maintain index[i], 
+
 								indexes[i].delete(fieldNum, blockNum);
 							}
 						}
@@ -309,7 +306,6 @@ public class HeapDB implements DB, Iterable<Record> {
 		return recs.get(0);
 	}
 
-	//TODO: Lookup
 	@Override
 	public List<Record> lookup(String fname, int key) {
 		int fieldNum = schema.getFieldIndex(fname);
@@ -319,32 +315,32 @@ public class HeapDB implements DB, Iterable<Record> {
 
 		List<Record> result = new ArrayList<Record>();
 
-		// YOUR CODE HERE
-				if (indexes[fieldNum]==null) { 
-					// no index on this column.  do linear scan
-					// add all records into "result"
-					for (Record rec : this) {
-						IntField fieldField = (IntField) rec.get(fieldNum);
 
-						if (fieldField.getValue() == key){
-							result.add(rec);
+		if (indexes[fieldNum]==null) {
 
-						}
-				    }
-					
-				} else {
-					// do index lookup
-					// returns a list of block numbers
-					// call lookupInBlock to get the actual records 
-					// add records into "result'
-					List<Integer> blockNumbers = indexes[fieldNum].lookup(key);
-					for(Integer number : blockNumbers) {
-						List<Record> records = lookupInBlock(fieldNum, key, number);
-						result.addAll(records);
-					}
+			// no index on this column.  do linear scan
+			// add all records into "result"
+			for (Record rec : this) {
+				IntField fieldField = (IntField) rec.get(fieldNum);
+
+				//Checks if the field's value is the same to the key before we ad it to the record list
+				if (fieldField.getValue() == key){
+					result.add(rec);
+
 				}
+			}
+		} else {
+			// do index lookup
+			// returns a list of block numbers
+			// call lookupInBlock to get the actual records
+			// add records into "result'
+			List<Integer> blockNumbers = indexes[fieldNum].lookup(key);
+			for(Integer number : blockNumbers) {
+				List<Record> records = lookupInBlock(fieldNum, key, number);
+				result.addAll(records);
+			}
+		}
 
-		// replace the following line with your return statement
 		return result;
 	}
 
@@ -424,16 +420,15 @@ public class HeapDB implements DB, Iterable<Record> {
 		createHashIndex(schema.getKey());
 	}
 
-	//TODO: Initialize
-	// initialize the given index
 	private void initializeIndex(int fieldNum, DBIndex index) {
 		if (index == null) {
 			throw new IllegalArgumentException("index is null");
 		}
 
-		// What wisneski recommended is beyond here
-
-		// toStringDiagnosis function code here
+		// for each record in the DB, you will need to insert its
+		// index column value and the block number
+		
+		// toStringDiagnosis function code was used for this function
 		Record rec = schema.blankRecord();
 
 		// read and print the block bitmap
@@ -441,15 +436,14 @@ public class HeapDB implements DB, Iterable<Record> {
 
 		for (int blockNum = bitmapBlock + 1; blockNum <= bf.getLastBlockIndex(); blockNum++) {
 			bf.read(blockNum, buffer);
-			// print the record bitmap of block
-			//sb.append("Block " + blockNum + "\n");
-			//sb.append("Record bitmap: " + recMap + "\n");
+
 			for (int recNum = 0; recNum < recMap.size(); recNum++) {
 				if (recMap.getBit(recNum)) {
 					// record j is present; check its key value
 					int loc = recordLocation(recNum);
 					rec.deserialize(buffer.buffer, loc);
 
+					// Finds the field integer of the record and uses that to get the key of the record
 					IntField fieldField = (IntField) rec.get(fieldNum);
 
 					index.insert(fieldField.getValue(), blockNum);
@@ -457,13 +451,6 @@ public class HeapDB implements DB, Iterable<Record> {
 			}
 		}
 
-		// YOUR CODE HERE
-		// for each record in the DB, you will need to insert its
-		// index column value and the block number
-		
-		// HINT:  see method toStringDiagnostic for example of how to
-		// iterate of all data blocks in table and all rows
-		// in each block
 	}
 
 	/**
